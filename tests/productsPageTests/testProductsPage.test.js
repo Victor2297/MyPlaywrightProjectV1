@@ -231,14 +231,6 @@ test.describe('test products page', ()=> {
     })
 })
 
-//execute a search
-//work with each cards
-//colect price and description
-//add to cart
-//view cart
-//compare price, description, quantity
-//verify page url, title
-
 async function getAllParagraphsAndUrls(page, pageUrl) {
     let category_paragraph_url = {}
     //go through all remaining products card
