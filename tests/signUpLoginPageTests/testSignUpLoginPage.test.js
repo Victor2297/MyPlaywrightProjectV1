@@ -84,7 +84,6 @@ test.describe('test signUp and login functionalities', ()=> {
                     await expect.soft(signUpLoginPage.page, 'Test1: after sign up we are redirected to right url').toHaveURL('/account_created')
                     await expect.soft(signUpLoginPage.page, 'Test2: after sign up we have right page title').toHaveTitle('Automation Exercise - Account Created')
                     await expect.soft(signUpLoginPage.account_creted_page.confirmationMessage, 'Test3: after sign up we see Account Created message').toBeVisible()
-                    console.log('11111111-', email)
                 }
                 else {
                     //Register User with existing email
@@ -94,7 +93,6 @@ test.describe('test signUp and login functionalities', ()=> {
                     await expect.soft(signUpLoginPage.page, 'Test5: after repeat sign up with already existing email we have right page title').toHaveTitle(urls_titles.initial_title)
                     //test will pass
                     await expect.soft(signUpLoginPage.signUpForm.emailAlreadyExistMesage, 'Test6: after repeat sign up with already existing email we see corresponding message').toBeVisible()
-                    console.log('222222222-', email)
                 }
             })
         })
