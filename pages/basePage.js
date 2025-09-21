@@ -9,7 +9,8 @@ class BasePage{
             homePageLink:  page.getByRole('link', { name: ' Home' }),
             productsPageLink: page.getByRole('link', { name: ' Products' }),
             cartPageLink: page.getByRole('link', { name: ' Cart' }),
-            singUp_Login_PageLink: page.getByRole('link', { name: ' Signup / Login'})
+            singUp_Login_PageLink: page.getByRole('link', { name: ' Signup / Login'}),
+            contactUsPageLink: page.getByRole('link', {name: 'Contact us'})
         }
         this.logoutButton = page.locator('//*[text()=" Logout"]')
         this.deleteAccountButton = page.locator('//*[text()=" Delete Account"]')
@@ -34,6 +35,9 @@ class BasePage{
     }
     async deleteCurrentAccount() {
         await this.deleteAccountButton.click()
+    }
+    async openContactUsPage() {
+        await this.pages.contactUsPageLink.click()
     }
 }
 export {BasePage}
