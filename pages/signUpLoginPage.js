@@ -8,7 +8,8 @@ class SignUpLoginPage {
         this.loginForm = {
             loginEmailAdress: page.locator('//*[@data-qa="login-email"]'),
             loginPassword: page.locator('//*[@data-qa="login-password"]'),
-            loginButton: page.locator('//*[@data-qa="login-button"]')
+            loginButton: page.locator('//*[@data-qa="login-button"]'),
+            wrongEmailOrPasswordMessage: page.getByText('Your email or password is')
         }
         //singUp form from /login
         this.signUpForm = {

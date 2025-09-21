@@ -11,11 +11,11 @@ test.describe('test signUp and login functionalities', ()=> {
         url_after_login: null,
         title_after_login: null
     }
+    test.beforeEach(async({basePage})=> {
+        await basePage.openSingUp_Login_Page()
+    })
     test.describe('test signup', ()=> {
         let newEmail = (Math.random() + 1).toString(36).substring(5)+'@gmail.com'
-        test.beforeEach(async({basePage})=> {
-            await basePage.openSingUp_Login_Page()
-        })
         test('test url, title', async({signUpLoginPage})=> {
             //verify url, title before sign up
             await expect.soft(signUpLoginPage.page, 'Test1: we have the correct initial URL').toHaveURL(urls_titles.initial_url)
@@ -98,6 +98,27 @@ test.describe('test signUp and login functionalities', ()=> {
         })
     })
     test.describe('test login', ()=> {
-        
+        test('verify mandatory fields', async({signUpLoginPage})=> {
+            //try to login without email and pasword
+            await signUpLoginPage.loginToYourAccount("", "")
+            await expect.soft(signUpLoginPage.loginForm.loginPassword, 'Test1: the focus is not set on the second field').not.toBeFocused()
+            await expect.soft(signUpLoginPage.loginForm.loginEmailAdress, 'Test2: the focus is set to the first field').toBeFocused()
+            //fill first field and try to login with empty password
+            await signUpLoginPage.loginToYourAccount("vcityu1@gmail.com", "")
+            await expect.soft(signUpLoginPage.loginForm.loginPassword, 'Test3: the focus is set to the next mandatory field').toBeFocused()
+
+        })
+        test('test login with unexisting email', async({signUpLoginPage})=> {
+            //try to login with unexisting email
+            await signUpLoginPage.loginToYourAccount('vrtyi@gmail.com', '123')
+            await expect.soft(signUpLoginPage.page, 'Test1: when we try to login with unexisting email the url is not changed').toHaveURL(urls_titles.initial_url)
+            await expect.soft(signUpLoginPage.page, 'Test2: when we try to login with unexisting email the title is not changed').toHaveTitle(urls_titles.initial_title)
+            await expect.soft(signUpLoginPage.loginForm.wrongEmailOrPasswordMessage, 'Test3: when we try to login with unexisting email is diplayed the corresponding message').toBeVisible()
+        })
+        test('test successully login', async({signUpLoginPage, basePage})=> {
+            await signUpLoginPage.loginToYourAccount('34yjgqyf@gmail.com', '123')
+            await expect.soft(basePage.logoutButton, 'Test1: after login we see logout button on the navigation bar').toBeVisible()
+            await expect.soft(basePage.deleteAccountButton, 'Tst2: after login we see delte account button on the navigation bar').toBeVisible()
+        })
     })
 })

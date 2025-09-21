@@ -11,6 +11,8 @@ class BasePage{
             cartPageLink: page.getByRole('link', { name: ' Cart' }),
             singUp_Login_PageLink: page.getByRole('link', { name: ' Signup / Login'})
         }
+        this.logoutButton = page.locator('//*[text()=" Logout"]')
+        this.deleteAccountButton = page.locator('//*[text()=" Delete Account"]')
     }
     async goToAutomationExercisePage() {
         await this.page.goto('/', {waitUntil:'domcontentloaded'})
@@ -26,6 +28,12 @@ class BasePage{
     }
     async openSingUp_Login_Page() {
         await this.pages.singUp_Login_PageLink.click()
+    }
+    async logoutFromCurrentAccount() {
+        await this.logoutButton.click()
+    }
+    async deleteCurrentAccount() {
+        await this.deleteAccountButton.click()
     }
 }
 export {BasePage}
