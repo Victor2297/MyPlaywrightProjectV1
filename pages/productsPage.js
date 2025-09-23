@@ -17,8 +17,8 @@ class ProductsPage{
         this.womenFiltersList = page.getByText('Dress Tops Saree')
         this.allSubFiltersFromWomenFilterList = page.locator('//*[@id="Women"]/div/ul/li/a')
         //same as for women filters list
-        //this.menFiltersList = 1
-        //this.kidFiltersList = 1
+        //this.menFiltersList = null
+        //this.kidFiltersList = null
 
         this.productsTitle = page.locator('//*[@class="title text-center"]')
         this.allBrands = page.locator('//*[contains(@href, "/brand_products/")]')
