@@ -4,31 +4,49 @@ class BasePage{
      */
     constructor(page) {
         this.page = page
-        this.automationExerciseLogo = page.locator('.col-sm-4').first()
-        this.pages = {
-            homePageLink:  page.getByRole('link', { name: ' Home' }),
-            productsPageLink: page.getByRole('link', { name: ' Products' }),
-            cartPageLink: page.getByRole('link', { name: ' Cart' }),
-            singUp_Login_PageLink: page.getByRole('link', { name: ' Signup / Login'}),
-            contactUsPageLink: page.getByRole('link', {name: 'Contact us'})
-        }
-        this.logoutButton = page.locator('//*[text()=" Logout"]')
-        this.deleteAccountButton = page.locator('//*[text()=" Delete Account"]')
     }
+    //getters
+    //links to pages
+    get homePageLink() {
+        return this.page.getByRole('link', { name: ' Home' })
+    }
+    get productsPageLink() {
+        return this.page.getByRole('link', { name: ' Products' })
+    }
+    get cartPageLink() {
+        return this.page.getByRole('link', { name: ' Cart' })
+    }
+    get singUp_Login_PageLink() {
+        return this.page.getByRole('link', { name: ' Signup / Login'})
+    }
+    get contactUsPageLink() {
+        return this.page.getByRole('link', {name: 'Contact us'})
+    }
+    //other locators
+    get automationExerciseLogo() {
+        return this.page.locator('.col-sm-4').first()
+    }
+    get logoutButton() {
+        return this.page.locator('//*[text()=" Logout"]')
+    }
+    get deleteAccountButton() {
+        return this.page.locator('//*[text()=" Delete Account"]')
+    }
+    //methods
     async goToAutomationExercisePage() {
         await this.page.goto('/', {waitUntil:'domcontentloaded'})
     }
     async openHomePage() {
-        await this.pages.homePageLink.click()
+        await this.homePageLink.click()
     }
     async openProductsPage(){
-        await this.pages.productsPageLink.click()
+        await this.productsPageLink.click()
     }
     async openCartPage() {
-        await this.pages.cartPageLink.click()
+        await this.cartPageLink.click()
     }
     async openSingUp_Login_Page() {
-        await this.pages.singUp_Login_PageLink.click()
+        await this.singUp_Login_PageLink.click()
     }
     async logoutFromCurrentAccount() {
         await this.logoutButton.click()
@@ -37,7 +55,7 @@ class BasePage{
         await this.deleteAccountButton.click()
     }
     async openContactUsPage() {
-        await this.pages.contactUsPageLink.click()
+        await this.contactUsPageLink.click()
     }
 }
 export {BasePage}
