@@ -6,28 +6,57 @@ class ProductsPage{
      */
     constructor(page) {
         this.page = page
-        this.specialOfferImage = page.getByRole('img', { name: 'Website for practice' })
-        this.searchProductField = page.getByRole('textbox', { name: 'Search Product' })
-        this.searchProductButton = page.getByRole('button', { name: '' })
-        this.categoryFilters = {
-            womenFilter: page.getByRole('link', { name: ' Women' }),
-            menFilter: page.getByRole('link', { name: ' Men' }),
-            kidsFilter: page.getByRole('link', { name: ' Kids' })
-        }
-        this.womenFiltersList = page.getByText('Dress Tops Saree')
-        this.allSubFiltersFromWomenFilterList = page.locator('//*[@id="Women"]/div/ul/li/a')
-        //same as for women filters list
-        //this.menFiltersList = null
-        //this.kidFiltersList = null
-
-        this.productsTitle = page.locator('//*[@class="title text-center"]')
-        this.allBrands = page.locator('//*[contains(@href, "/brand_products/")]')
-        this.breadcrumb = page.locator('//*[@class="breadcrumb"]/li').nth(1)
-        this.allProductCarts = page.locator('//*[@class="productinfo text-center"]')
-        this.allProductCartsOverlayContent = page.locator('//*[@class="overlay-content"]')
-        this.continueShopingButton = page.locator('//*[@class="btn btn-success close-modal btn-block"]')
-        this.viewCartLink = page.locator('//*[@href="/view_cart"]').nth(1)
     }
+    //getters
+    get specialOfferImage() {
+        return this.page.getByRole('img', { name: 'Website for practice' })
+    }
+    get searchProductField() {
+        return this.page.getByRole('textbox', { name: 'Search Product' })
+    }
+    get searchProductButton() {
+        return this.page.getByRole('button', { name: '' })
+    }
+    //getters
+    //categoryFilters
+    get categoryFiltersWomenFilter() {
+        return this.page.getByRole('link', { name: ' Women' })
+    }
+    get categoryFiltersMenFilter() {
+        return this.page.getByRole('link', { name: ' Men' })
+    }
+    get categoryFiltersKidsFilter() {
+        return this.page.getByRole('link', { name: ' Kids' })
+    }
+    get womenFiltersList() {
+        return this.page.getByText('Dress Tops Saree')
+    }
+    get allSubFiltersFromWomenFilterList() {
+        return this.page.locator('//*[@id="Women"]/div/ul/li/a')
+    }
+    //other getters
+    get productsTitle() {
+        return this.page.locator('//*[@class="title text-center"]')
+    }
+    get allBrands() {
+        return this.page.locator('//*[contains(@href, "/brand_products/")]')
+    }
+    get breadcrumb() {
+        return this.page.locator('//*[@class="breadcrumb"]/li').nth(1)
+    }
+    get allProductCarts() {
+        return this.page.locator('//*[@class="productinfo text-center"]')
+    }
+    get allProductCartsOverlayContent() {
+        return this.page.locator('//*[@class="overlay-content"]')
+    }
+    get continueShopingButton() {
+        return this.page.locator('//*[@class="btn btn-success close-modal btn-block"]')
+    }
+    get viewCartLink() {
+        return this.page.locator('//*[@href="/view_cart"]').nth(1)
+    }
+    //methods
     async searchProduct(productName) {
         await this.searchProductField.fill(productName)
         await this.searchProductButton.click()

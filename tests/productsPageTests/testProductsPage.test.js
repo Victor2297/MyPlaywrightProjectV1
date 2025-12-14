@@ -8,52 +8,70 @@ test.describe('test products page', ()=> {
         await basePage.openProductsPage()
     })
     test("test page's welcome image, url, title", async({productsPage, page})=>{
-        await expect.soft(productsPage.specialOfferImage, 'Test1: special offer image is visible on products page').toBeVisible()
-        await expect.soft(productsPage.page, 'Test2: page url contains products subdirectory').toHaveURL('products')
-        await expect.soft(productsPage.page, 'Test3: page has right title').toHaveTitle('Automation Exercise - All Products')
+        await test.step('Step1: verify if the special offer image is visible on the products page', async()=> {
+            await expect.soft(productsPage.specialOfferImage, 'Test1: special offer image is visible on products page').toBeVisible()
+        })
+        await test.step('Step2: verify page url', async()=> {
+            await expect.soft(page, 'Test2: page url contains products subdirectory').toHaveURL('products')
+        })
+        await test.step('Step3: verify page title', async()=> {
+            await expect.soft(page, 'Test3: page has right title').toHaveTitle('Automation Exercise - All Products')
+        })
     });
     test("test page's search field/functionality - with valid data", async({productsPage, context}, testInfo)=>{
-        test.setTimeout(50000)
+        test.setTimeout(50*1000)
         const searchedText = 'shirt'
         //execute a search
-        await productsPage.searchProduct(searchedText)
-        //get all paragraphs and urls of products remained after search
-        const paragraphs_urls = await getAllParagraphsAndUrls(productsPage.page, testInfo.project.use.baseURL)
-        
-        const urls = Object.values(paragraphs_urls)
-        const paragraphs = Object.keys(paragraphs_urls)
-        for (const paragraph of paragraphs) {
-            //verify if paragraph contains searched text
-            const paragraphContainsSearchedText = verifyIfStringContainsSubstring(searchedText, paragraph)
-            //first verification
-            //first check - check if each paragraph from card contains searched word
-            if(paragraphContainsSearchedText === true) {
-                expect.soft(paragraphContainsSearchedText, 'Verification 1: Paragraph contains searched word').toBeTruthy()
-            }
-            //second verification
-            //second check - check if for each opened link/card/page category contains the searched word
-            else {
-                const newPromise = context.waitForEvent('page')
-                //open new tab
-                const page = await context.newPage()
-                const newPage = await newPromise
-                //go to url
-                await newPage.goto(paragraphs_urls[paragraph])
-                //get category text
-                //example Category: Men >  Tshirts
-                const categoryText = await newPage.locator('//*[@class="product-information"]/p').first().innerText()
-                const categoryContainsSearchedText = verifyIfStringContainsSubstring(searchedText, categoryText)
-                //verify if category text contains searched word
-                //test passed
-                if(categoryContainsSearchedText === true) {
-                    expect.soft(categoryContainsSearchedText, 'Verification2: Category contains the searched word').toBeTruthy()
+        await test.step('Step1: Fill in the product search field with the required product name/category and search for it', async()=> {
+            await productsPage.searchProduct(searchedText)
+        })
+        await test.step('Step2: Go through all paragraphs and product URLs left after the search', async()=> {
+            //get all paragraphs and urls of products remained after search
+            const paragraphs_urls = await getAllParagraphsAndUrls(productsPage.page, testInfo.project.use.baseURL)
+            const urls = Object.values(paragraphs_urls)
+            const paragraphs = Object.keys(paragraphs_urls)
+            for (const paragraph of paragraphs) {
+                //verify if paragraph contains searched text
+                const paragraphContainsSearchedText = 
+                await test.step('Step3: verify if the pragraph contains the searched text', async()=> {
+                    const paragraphContainsSearchedText = verifyIfStringContainsSubstring(searchedText, paragraph)
+                    //first verification
+                    //first check - check if each paragraph from card contains searched word
+                    if(paragraphContainsSearchedText === true) {
+                        expect.soft(paragraphContainsSearchedText, 'Verification 1: Paragraph contains searched word').toBeTruthy()
+                        return true
+                    }
+                    else {
+                        return false
+                    }
+                })
+                //second verification
+                //second check - check if for each opened link/card/page category contains the searched word
+                if(paragraphContainsSearchedText === false) {
+                    await test.step('Step3.1: verify if for each opened link/card/page category contains the searched word', async()=> {
+                        const newPromise = context.waitForEvent('page')
+                        //open new tab
+                        const page = await context.newPage()
+                        const newPage = await newPromise
+                        //go to url
+                        await newPage.goto(paragraphs_urls[paragraph])
+                        //get category text
+                        //example Category: Men >  Tshirts
+                        const categoryText = await newPage.locator('//*[@class="product-information"]/p').first().innerText()
+                        const categoryContainsSearchedText = verifyIfStringContainsSubstring(searchedText, categoryText)
+                        //verify if category text contains searched word
+                        //test passed
+                        if(categoryContainsSearchedText === true) {
+                            expect.soft(categoryContainsSearchedText, 'Verification2: Category contains the searched word').toBeTruthy()
+                        }
+                        //test failed
+                        else {
+                            expect.soft(categoryContainsSearchedText, 'Verification3: Category does not contains the searched word', categoryText).toBeTruthy()
+                        }
+                    })
                 }
-                //test failed
-                else {
-                    expect.soft(categoryContainsSearchedText, 'Verification3: Category does not contains the searched word', categoryText).toBeTruthy()
-                }
             }
-        }
+        })
     });
     test("test page's search field/functionality - with invalid data", async({productsPage})=> {
         const initialProductsCount = await productsPage.page.locator('//*[@class="single-products"]').count()
