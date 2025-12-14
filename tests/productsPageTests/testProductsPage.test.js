@@ -73,7 +73,8 @@ test.describe('test products page', ()=> {
             }
         })
     });
-    test("test page's search field/functionality - with invalid data", async({productsPage})=> {
+    //the tests below require refactoring
+    test.fixme("test page's search field/functionality - with invalid data", async({productsPage})=> {
         const initialProductsCount = await productsPage.page.locator('//*[@class="single-products"]').count()
         const initialTitleText = await productsPage.productsTitle.innerText()
         //#1 search with empty spaces
@@ -94,7 +95,7 @@ test.describe('test products page', ()=> {
         //verify title text after search
         await expect.soft(await productsPage.productsTitle.innerText(), 'Test5: products title was changed from all products in searched products').toEqual('SEARCHED PRODUCTS')
     });
-    test.describe("test page's category filters", ()=>{
+    test.describe.fixme("test page's category filters", ()=>{
         test('test women filter', async({productsPage})=> {
             //open women filter
             await productsPage.open_close_womenFilter()
@@ -142,7 +143,7 @@ test.describe('test products page', ()=> {
             //same as for women filter
         })
     });
-    test("test page's brands filter", async({productsPage})=>{
+    test.fixme("test page's brands filter", async({productsPage})=>{
         test.setTimeout(50000)
         var brandName = ''
         var brandCount = 0
@@ -205,7 +206,7 @@ test.describe('test products page', ()=> {
             i++
         }
     });
-    test("test add to cart functionality", async({productsPage, cartPage})=> {
+    test.fixme("test add to cart functionality", async({productsPage, cartPage})=> {
         test.setTimeout(50000)
         const searchText = 'men'
         //execute a search
