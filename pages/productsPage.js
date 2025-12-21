@@ -61,8 +61,14 @@ class ProductsPage{
         await this.searchProductField.fill(productName)
         await this.searchProductButton.click()
     }
+    async productsCount() {
+        return await this.allProductCarts.count()
+    }
+    async titleText() {
+        return await this.productsTitle.innerText()
+    }
     async open_close_womenFilter() {
-        this.categoryFilters.womenFilter.click()
+        this.categoryFiltersWomenFilter.click()
     }
     async closeConfirmationModal() {
         await this.continueShopingButton.click()

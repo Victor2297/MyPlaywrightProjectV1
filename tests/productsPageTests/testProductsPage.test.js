@@ -73,78 +73,103 @@ test.describe('test products page', ()=> {
             }
         })
     });
-    //the tests below require refactoring
-    test.fixme("test page's search field/functionality - with invalid data", async({productsPage})=> {
-        const initialProductsCount = await productsPage.page.locator('//*[@class="single-products"]').count()
-        const initialTitleText = await productsPage.productsTitle.innerText()
-        //#1 search with empty spaces
-        let searchedText = '      '
-        await productsPage.searchProduct(searchedText)
-        //verify page url
-        await expect.soft(productsPage.page, 'Test1: url has right structure').toHaveURL('products?search=')
-        //verify products count
-        expect.soft(await productsPage.page.locator('//*[@class="single-products"]').count(), 'Test2: number of products is same before and after search with empty spaces').toEqual(initialProductsCount)
-        //verify title text after search
-        expect.soft(await productsPage.productsTitle.innerText(), 'Test3: after search with empty spaces the title text is same as initial title text').toEqual(initialTitleText)
-
-        //#2 search with unexisting data, example verttyuetrytuyhi22
-        searchedText = '23422vi'
-        await productsPage.searchProduct(searchedText)
-        //verify page url
-        await expect.soft(productsPage.page, 'Test4: page url contains searched text').toHaveURL(`products?search=${searchedText}`)
-        //verify title text after search
-        await expect.soft(await productsPage.productsTitle.innerText(), 'Test5: products title was changed from all products in searched products').toEqual('SEARCHED PRODUCTS')
-    });
-    test.describe.fixme("test page's category filters", ()=>{
-        test('test women filter', async({productsPage})=> {
-            //open women filter
-            await productsPage.open_close_womenFilter()
-            //verify if women filters list is visible
-            await expect.soft(productsPage.womenFiltersList, 'Test1: all three women filters are visible').toBeVisible()
-            //close women filter
-            await productsPage.open_close_womenFilter()
-            //verify if women filters list is hidden
-            await expect.soft(productsPage.womenFiltersList, 'Test2: all three women filters are hidden').toBeHidden()
-            //again open women filters and interact with them
-            await productsPage.open_close_womenFilter()
-
-            //all constants are stored in array
-            const womenFiltersTextLinks = [
-                {text: 'Dress', link: '/category_products/22'}, //this is a wrong data
-                {text: 'TOPS', link: '/category_products/2'},
-                {text: 'SAREE', link: '/category_products/7'}
-            ]
-            //iteration
-            var item = 0
-            for(const filter of await productsPage.allSubFiltersFromWomenFilterList.all()) {
-                const filterText = await filter.innerText()
-                const filterLink = await filter.getAttribute('href')
-                //verify subfilter order, subfilter text and subfilter link
-                if (item === 0 && filterText.trim() === womenFiltersTextLinks[item].text && filterLink === womenFiltersTextLinks[item].link) {
-                    expect.soft(true, `Test3: ${filterText} filter includes all the necessary conditions`).toBeTruthy()
-                }
-                else if (item === 1 && filterText.trim() ===  womenFiltersTextLinks[item].text && filterLink === womenFiltersTextLinks[item].link) {
-                    expect.soft(true, `Test4: ${filterText} filter includes all the necessary conditions`).toBeTruthy()
-                }
-                else if (item === 2 && filterText.trim() ===  womenFiltersTextLinks[item].text && filterLink === womenFiltersTextLinks[item].link) {
-                    expect.soft(true, `Test5: ${filterText} filter includes all the necessary conditions`).toBeTruthy()
+    [
+        {id: 1, searchedText:'      ', description: 'fill the search field with blank spaces'},
+        {id: 2, searchedText:'23422vi', description: 'fill in the search field with non-existent product names'}
+    ].forEach(({id, searchedText, description})=> {
+        test(`test page's search functionality - with invalid data ${id}`, {tag:'@invalidSearch', annotation:{type:'data set', description:description}}, async({productsPage, page})=> {
+            let initialProductsCount;
+            let initialTitleText;
+            await test.step('Step1: collect the initial count of product and initiala products title', async()=>{
+                initialProductsCount = await productsPage.productsCount()
+                initialTitleText = await productsPage.titleText()
+            })
+            await test.step('Step2: execute a search with invalid data', async()=> {
+                await productsPage.searchProduct(searchedText)
+            })
+            await test.step('Step3: verify page url, products count and title after search', async()=> {
+                if(id === 1) {
+                    //#1 search with empty spaces
+                    //verify page url
+                    await expect.soft(page, 'Test1: url has right structure').toHaveURL('products?search=')
+                    //verify products count
+                    expect.soft(await productsPage.productsCount(), 'Test2: number of products is same before and after search with empty spaces').toEqual(initialProductsCount)
+                    //verify title text after search
+                    expect.soft(await productsPage.titleText(), 'Test3: after search with empty spaces the title text is same as initial title text').toEqual(initialTitleText)
                 }
                 else {
-                    expect.soft(false, `Test6: ${filterText} filter does not includes all the necessary conditions`).toBeTruthy()
-                    //console.log(item, filterText, womenFiltersTextLinks[item].text, filterLink, womenFiltersTextLinks[item].link)
+                    //#2 search with unexisting data, example verttyuetrytuyhi22
+                    //verify page url
+                    await expect.soft(page, 'Test4: page url contains searched text').toHaveURL(`products?search=${searchedText}`)
+                    await expect.soft(productsPage.allProductCarts, 'Test5: number of products after search with invalid dat is 0').toHaveCount(0)
+                    //verify title text after search
+                    await expect.soft(await productsPage.titleText(), 'Test6: products title was changed from all products in searched products').toEqual('SEARCHED PRODUCTS')
                 }
-                item+=1
-            }
+            })
         });
-        test('test men filter', async({productsPage})=> {
+    })
+    test.describe("test page's category filters", ()=>{
+        test('test women filter', async({productsPage})=> {
+            //open women filter
+            await test.step('Step1: open womn filter', async()=> {
+                await productsPage.open_close_womenFilter()
+            })    
+            //verify if women filters list is visible
+            await test.step('Step2: verify if women filters list is visible', async()=> {
+                await expect.soft(productsPage.womenFiltersList, 'Test1: all three women filters are visible').toBeVisible()
+            })
+            //close women filter
+            await test.step('Step3: close women filter', async()=> {
+                await productsPage.open_close_womenFilter()
+            })
+            //verify if women filters list is hidden
+            await test.step('Step4: verify if women filters list is hidden', async()=> {
+                await expect.soft(productsPage.womenFiltersList, 'Test2: all three women filters are hidden').toBeHidden()
+            })
+            //again open women filters and interact with them
+            await test.step('Step5: again open women filters and interact with them', async()=> {
+                await productsPage.open_close_womenFilter()
+            })
+            await test.step('Step6: verify subfilter order, subfilter text and subfilter link', async()=> {
+                //all constants are stored in array
+                const womenFiltersTextLinks = [
+                    {text: 'Dress', link: '/category_products/22'}, //this is a wrong data
+                    {text: 'Tops', link: '/category_products/2'},
+                    {text: 'Saree', link: '/category_products/7'}
+                ]
+                //iteration
+                var item = 0
+                for(const filter of await productsPage.allSubFiltersFromWomenFilterList.all()) {
+                    const filterText = await filter.innerText()
+                    const filterLink = await filter.getAttribute('href')
+                    //verify subfilter order, subfilter text and subfilter link
+                    if (item === 0 && filterText.trim().toUpperCase() === womenFiltersTextLinks[item].text.toUpperCase() && filterLink === womenFiltersTextLinks[item].link) {
+                        expect.soft(true, `Test3: ${filterText} filter includes all the necessary conditions`).toBeTruthy()
+                    }
+                    else if (item === 1 && filterText.trim().toUpperCase() ===  womenFiltersTextLinks[item].text.toUpperCase() && filterLink === womenFiltersTextLinks[item].link) {
+                        expect.soft(true, `Test4: ${filterText} filter includes all the necessary conditions`).toBeTruthy()
+                    }
+                    else if (item === 2 && filterText.trim().toUpperCase() ===  womenFiltersTextLinks[item].text.toUpperCase() && filterLink === womenFiltersTextLinks[item].link) {
+                        expect.soft(true, `Test5: ${filterText} filter includes all the necessary conditions`).toBeTruthy()
+                    }
+                    else {
+                        expect.soft(false, `Test6: ${filterText} filter does not includes all the necessary conditions`).toBeTruthy()
+                        //console.log(item, filterText, womenFiltersTextLinks[item].text, filterLink, womenFiltersTextLinks[item].link)
+                    }
+                    item+=1
+                }
+            })
+            
+        });
+        test.skip('test men filter', async({productsPage})=> {
             //same as for women filter
         });
-        test('test kids filter', async({productsPage})=> {
+        test.skip('test kids filter', async({productsPage})=> {
             //same as for women filter
         })
     });
-    test.fixme("test page's brands filter", async({productsPage})=>{
-        test.setTimeout(50000)
+    test("test page's brands filter", async({productsPage})=>{
+        test.setTimeout(50*1000)
         var brandName = ''
         var brandCount = 0
         //all titles and urls of brands
@@ -186,26 +211,44 @@ test.describe('test products page', ()=> {
         var i = 0
         //go through all the brands
         //and work with each in part
-        for(const brand of await productsPage.allBrands.all()) {
-            //brand name and count
-            //example POLO (5)
-            brandName = await getTextFromParentElement(brand)
-            brandCount = await extractIntFromString(brand.locator('span'))
-            //open brand
-            await brand.click()
-            //verify page title for each opened brand
-            await expect.soft(productsPage.page, `Test1.${i}: the brand "${brandName}" has corresponing title`).toHaveTitle(brands_titles_urls[i].title)
-            //verify page url for each opened brand
-            await expect.soft(productsPage.page, `Test2.${i}: the brand "${brandName}" has corresponding url `).toHaveURL(brands_titles_urls[i].url)
-            //verify if products title (from the center of the page) contains selected brand
-            expect.soft(verifyIfStringContainsSubstring(brandName, await productsPage.productsTitle.innerText()), `Test3.${i}: the product's title contains the selected brand`).toBeTruthy()
-            //checks if the corresponding breadcrumb is displayed on the page after selecting the brand
-            await expect.soft(productsPage.breadcrumb, `Test4.${i}: on the page is diplayd the corrsponding breadcrumb`).toHaveText(brandName.trim())
-            //select brand and verify if the number of products from page corresponds to number from brand filter
-            await expect.soft(productsPage.allProductCarts, `Test5.${i}: the brand count correspond to product cards number on the page`).toHaveCount(brandCount)
-            i++
-        }
+        await test.step('Step1: go through all the brands and work with each in part', async()=> {
+            for(const brand of await productsPage.allBrands.all()) {
+                //brand name and count
+                //example POLO (5)
+                await test.step(`Step2.${i}: get brand namae and count`, async()=> {
+                    brandName = await getTextFromParentElement(brand)
+                    brandCount = await extractIntFromString(brand.locator('span'))
+                })
+                //open brand
+                await test.step(`Step3.${i}: open each brand`, async()=> {
+                    await brand.click()
+                })
+                //verify page title for each opened brand
+                await test.step(`Step4.${i}: verify page title for each opened brand`, async()=> {
+                    await expect.soft(productsPage.page, `Test1.${i}: the brand "${brandName}" has corresponing title`).toHaveTitle(brands_titles_urls[i].title)
+                })
+                //verify page url for each opened brand
+                await test.step(`Step5.${i}: verify page url for each opened brand`, async()=> {
+                    await expect.soft(productsPage.page, `Test2.${i}: the brand "${brandName}" has corresponding url `).toHaveURL(brands_titles_urls[i].url)
+                })
+                //verify if products title (from the center of the page) contains selected brand
+                await test.step(`Step6.${i}: verify if products title (from the center of the page) contains selected brand`, async()=> {
+                    expect.soft(verifyIfStringContainsSubstring(brandName, await productsPage.titleText()), `Test3.${i}: the product's title contains the selected brand`).toBeTruthy()
+                })
+                //checks if the corresponding breadcrumb is displayed on the page after selecting the brand
+                await test.step(`Step7.${i}: checks if the corresponding breadcrumb is displayed on the page after selecting the brand`, async()=> {
+                    await expect.soft(productsPage.breadcrumb, `Test4.${i}: on the page is diplayd the corrsponding breadcrumb`).toHaveText(brandName.trim())
+                })
+                //select brand and verify if the number of products from page corresponds to number from brand filter
+                await test.step(`Step8.${i}: select brand and verify if the number of products from page corresponds to number from brand filter`, async()=> {
+                    await expect.soft(productsPage.allProductCarts, `Test5.${i}: the brand count correspond to product cards number on the page`).toHaveCount(brandCount)
+                })
+                i++
+            }
+        })
+        
     });
+    //the tests below require refactoring
     test.fixme("test add to cart functionality", async({productsPage, cartPage})=> {
         test.setTimeout(50000)
         const searchText = 'men'
