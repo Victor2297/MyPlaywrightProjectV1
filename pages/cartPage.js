@@ -6,11 +6,21 @@ class CartPage{
      */
     constructor(page) {
         this.page = page
-        this.breadcrumb = page.getByText('Shopping Cart')
-        this.allProductsAddedInCart = page.locator('//*[contains(@id,"product")]')
-        this.proceedToCheckoutButton = page.locator('//*[@class="btn btn-default check_out"]')
-        this.cartPageIsEmptyMessage = page.locator('//*[@id="empty_cart"]')
     }
+    //getters
+    get breadcrumb() {
+        return this.page.getByText('Shopping Cart')
+    }
+    get allProductsAddedInCart() {
+        return this.page.locator('//*[contains(@id,"product")]')
+    }
+    get proceedToCheckoutButton() {
+        return this.page.locator('//*[@class="btn btn-default check_out"]')
+    }
+    get cartPageIsEmptyMessage() {
+        return this.page.locator('//*[@id="empty_cart"]')
+    }
+    //methods
     async proceedToCheckout() {
         await this.proceedToCheckoutButton.click()
     }

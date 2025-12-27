@@ -111,7 +111,7 @@ test.describe('test products page', ()=> {
     test.describe("test page's category filters", ()=>{
         test('test women filter', async({productsPage})=> {
             //open women filter
-            await test.step('Step1: open womn filter', async()=> {
+            await test.step('Step1: open women filter', async()=> {
                 await productsPage.open_close_womenFilter()
             })    
             //verify if women filters list is visible
@@ -248,49 +248,80 @@ test.describe('test products page', ()=> {
         })
         
     });
-    //the tests below require refactoring
-    test.fixme("test add to cart functionality", async({productsPage, cartPage})=> {
-        test.setTimeout(50000)
-        const searchText = 'men'
+    [
+        {searchText: 'men'}
+    ].forEach(({searchText})=> {
+    test("test add to cart functionality", async({page, productsPage, cartPage})=> {
+        test.setTimeout(120*1000)
         //execute a search
-        await productsPage.searchProduct(searchText)
+        await test.step('Step1: search for product', async()=> {
+            await productsPage.searchProduct(searchText)
+        })
         var cart_price_description = []
         var cartNumber = 0
         var iterationCount = 0
-        //work with each cart
-        for(const cart of await productsPage.allProductCarts.all()) {
-            const price = await extractIntFromString(cart.locator('h2'))
-            const description = await cart.locator('p').innerText()
-            var obj = {cartNumber:cartNumber, price:price, description:description}
-            cart_price_description.push(obj)
-            await cart.hover()
-            //add product to card
-            await productsPage.page.locator('.overlay-content > .btn').nth(cartNumber).click()
-            //verify if actual iteration is last iteration
-            if((cartNumber+1) === await productsPage.allProductCarts.count()) {
-                //see all added products in cart
-                await productsPage.openViewCart()
-                await expect.soft(cartPage.page, 'Test1: the opened page has corresponing url').toHaveURL('/view_cart')
-                await expect.soft(cartPage.page, 'Test2: the opened page has corrsponding title').toHaveTitle('Automation Exercise - Checkout')
-                await expect.soft(cartPage.breadcrumb, 'Test3: the opened page has corresponding bredcrumb').toHaveText('Shopping Cart')
-                //go through the entire list of items
-                for(const item of await cartPage.allProductsAddedInCart.all()) {
-                    const itemDescription = await item.locator('//*[contains(@href,"/product_details/")]').innerText()
-                    const itemPrice = await extractIntFromString(item.locator('//*[@class="cart_price"]'))
-                    expect.soft(itemDescription, `Test4.${iterationCount}: the inital description and the description from item correspond`).toEqual(cart_price_description[iterationCount].description)
-                    expect.soft(itemPrice, `Test5.${iterationCount}: the inital price and the price from item correspond`).toEqual(cart_price_description[iterationCount].price)
-                    iterationCount+=1
-                }
-            }
-            else {
-                //continue shoping
-                await productsPage.closeConfirmationModal()
-            }
-
-            cartNumber+=1
+        var stepCount = 0
+        const cartPageAttributes = {
+            url: '/view_cart',
+            title: 'Automation Exercise - Checkout',
+            breadcrumb: 'Shopping Cart'
         }
-        console.log(cart_price_description)
+        //work with each cart
+        await test.step('Step2: work with each cart', async()=> {
+            for(const cart of await productsPage.allProductCarts.all()) {
+                await test.step(`Step2.1.${stepCount}: collect the price and description for product`, async()=> {
+                    const price = await extractIntFromString(cart.locator('h2'))
+                    const description = await cart.locator('p').innerText()
+                    var obj = {cartNumber:cartNumber, price:price, description:description}
+                    cart_price_description.push(obj)
+                })
+                await test.step(`Step2.2.${stepCount}: hover the product cart`, async()=> {
+                    await cart.hover()
+                })
+                //add product to card
+                await test.step(`Step2.3.${stepCount}: add product to cart`, async()=> {
+                    await productsPage.page.locator('.overlay-content > .btn').nth(cartNumber).click()
+                })
+
+                //verify if actual iteration is last iteration
+                await test.step(`Step2.4.${stepCount}: verify if actual iteration is last iteration`, async ()=> {
+                    if((cartNumber+1) === await productsPage.allProductCarts.count()) {
+                        await test.step(`Step2.4.2.${stepCount}: go to cart page and verify page url, title, breadcrumb`, async()=> {
+                            await productsPage.openViewCart()
+                            await expect.soft(page, 'Test1: the opened page has corresponing url').toHaveURL(cartPageAttributes.url)
+                            await expect.soft(page, 'Test2: the opened page has corrsponding title').toHaveTitle(cartPageAttributes.title)
+                            await expect.soft(cartPage.breadcrumb, 'Test3: the opened page has corresponding breadcrumb').toHaveText(cartPageAttributes.breadcrumb)
+                        })
+                        
+                        //go through the entire list of items
+                        await test.step(`Step2.4.3.${stepCount}: see all products added to cart`, async()=> {
+                            for(const item of await cartPage.allProductsAddedInCart.all()) {
+                                const itemDescription = await item.locator('//*[contains(@href,"/product_details/")]').innerText()
+                                const itemPrice = await extractIntFromString(item.locator('//*[@class="cart_price"]'))
+                                expect.soft(itemDescription, `Test4.${iterationCount}: the inital description and the description from item correspond`).toEqual(cart_price_description[iterationCount].description)
+                                expect.soft(itemPrice, `Test5.${iterationCount}: the inital price and the price from item correspond`).toEqual(cart_price_description[iterationCount].price)
+                                iterationCount+=1
+                            }
+                        })
+                        
+                    }
+                    else {
+                        //continue shoping
+                        await test.step(`Step2.4.1.${stepCount}: continue shoping`, async()=> {
+                            await productsPage.closeConfirmationModal()
+                        })
+                        
+                    }
+
+                    cartNumber+=1
+                })
+                stepCount+=1
+            }
+            console.log(cart_price_description)
+        })
+    })    
     })
+    
 })
 
 async function getAllParagraphsAndUrls(page, pageUrl) {
