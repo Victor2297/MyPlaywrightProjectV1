@@ -4,35 +4,52 @@ class ContactUsPage {
      */
     constructor(page) {
         this.page = page
-        this.contactForm = {
-            name: page.getByRole('textbox', { name: 'Name' }),
-            email: page.getByRole('textbox', { name: 'Email', exact: true }),
-            subject: page.getByRole('textbox', { name: 'Subject' }),
-            message: page.getByRole('textbox', { name: 'Your Message Here' }),
-            chooseFile: page.getByRole('button', { name: 'Choose File' }),
-            submitButton: page.getByRole('button', {name:'Submit'})
-        }
-        this.successMessage = page.locator('#contact-page').getByText('Success! Your details have')
-        this.homePageButton = page.locator('#form-section').getByRole('link', { name: 'Home' })
     }
-
+    //getters
+    //contact form
+    get contactFormName() {
+        return this.page.getByRole('textbox', { name: 'Name' })
+    }
+    get contactFormEmail() {
+        return this.page.getByRole('textbox', { name: 'Email', exact: true })
+    }
+    get contactFormSubject() {
+        return this.page.getByRole('textbox', { name: 'Subject' })
+    }
+    get contactFormMessage() {
+        return this.page.getByRole('textbox', { name: 'Your Message Here' })
+    }
+    get contactFormChooseFile() {
+        return this.page.getByRole('button', { name: 'Choose File' })
+    }
+    get contactFormSubmitButton() {
+        return this.page.getByRole('button', {name:'Submit'})
+    }
+    //other
+    get successMessage() {
+        return this.page.locator('#contact-page').getByText('Success! Your details have')
+    }
+    get homePageButton() {
+        return this.page.locator('#form-section').getByRole('link', { name: 'Home' })
+    }
+    //methods
     async fillNameFromContactForm(userName){
-        await this.contactForm.name.fill(userName)
+        await this.contactFormName.fill(userName)
     }
     async fillEmailFromContactForm(userEmail){
-        await this.contactForm.email.fill(userEmail)
+        await this.contactFormEmail.fill(userEmail)
     }
     async fillSubjectFromContactForm(userSubject){
-        await this.contactForm.subject.fill(userSubject)
+        await this.contactFormSubject.fill(userSubject)
     }
     async fillMessageFromContactForm(userMessage){
-        await this.contactForm.message.fill(userMessage)
+        await this.contactFormMessage.fill(userMessage)
     }
     async fillChooseFileFromContactForm(file) {
-        await this.contactForm.chooseFile.fill(file)
+        await this.contactFormChooseFile.fill(file)
     }
     async submitTheForm() {
-        await this.contactForm.submitButton.click()
+        await this.contactFormSubmitButton.click()
     }
 
     async fillContactForm(dataSet) {
