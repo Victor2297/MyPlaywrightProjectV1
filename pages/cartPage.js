@@ -1,6 +1,6 @@
 //ts-check
 
-class CartPage{
+class CartPage {
     /** 
      * @param {import('playwright').Page} page
      */
@@ -19,6 +19,9 @@ class CartPage{
     }
     get cartPageIsEmptyMessage() {
         return this.page.locator('//*[@id="empty_cart"]')
+    }
+    get noProductsMessage() {
+        return this.page.getByText('Cart is empty! Click here to')
     }
     //methods
     async proceedToCheckout() {

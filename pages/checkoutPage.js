@@ -4,11 +4,21 @@ class CheckoutPage {
      */
     constructor(page) {
         this.page = page
-        this.breadcrumb = page.locator('//*[@class="active"]')
-        this.allProductsFromCheckoutPage = page.locator('//*[contains(@id, "product")]')
-        this.totalAmountPerAllProducts = page.locator('//*[@class="cart_total_price"]').last()
-        this.placeOrderButton = page.locator('//*[@class="btn btn-default check_out"]')
     }
+    //getters
+    get breadcrumb() {
+        return this.page.locator('//*[@class="active"]')
+    }
+    get allProductsFromCheckoutPage() {
+        return this.page.locator('//*[contains(@id, "product")]')
+    }
+    get totalAmountPerAllProducts() {
+        return this.page.locator('//*[@class="cart_total_price"]').last()
+    }
+    get placeOrderButton() {
+        return this.page.locator('//*[@class="btn btn-default check_out"]')
+    }
+    //methods
     async placeOrder() {
         await this.placeOrderButton.click()
     }
