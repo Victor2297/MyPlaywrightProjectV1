@@ -1,5 +1,5 @@
 //ts-check
-import {test} from '../_myPracticalExercises/fixtures/fixtures'
+import {test} from '../_myPracticalExercises/fixtures/momondoFixtures/fixtures'
 import {expect} from '@playwright/test'
 
 test.describe('test momondocars page', ()=> {

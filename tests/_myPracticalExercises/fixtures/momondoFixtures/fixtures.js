@@ -1,5 +1,5 @@
 import {test as base} from '@playwright/test'
-import {MomondoCarsPage} from '../../_myPracticalExercises/pages/momondoCarsPage'
+import {MomondoCarsPage} from '../../pages/momondoPages/momondoCarsPage'
 
 const test = base.extend({
     momondoCarsPage: async({page}, use)=> {
